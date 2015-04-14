@@ -1,0 +1,13 @@
+html, body {
+	font-family: Helvetica;
+}
+
+svg {
+	margin-bottom: 20px;
+}
+
+text {
+	font-size: 11px;
+	fill: #FFF;
+	text-anchor: middle
+}

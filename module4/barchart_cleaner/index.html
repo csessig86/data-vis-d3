@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Free and reduced lunch in Iowa</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+	</head>
+
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<body>
+		<h3>Free and reduced lunch in Iowa</h3>
+		<p>This graph shows all the schools in Iowa where 50% or more of their students are on a free or reduced lunch program. A total of 64 school districts are shown. To download hte data, <a href="https://docs.google.com/spreadsheets/d/1KvLX4M8ww2js4GMWOX4niM9fApu0efvc59pLKAyeM-s/" target="_blank">click here</a>.</p>
+		<svg></svg>
+
+		<script type="text/javascript">		
+			var width = 500;
+			var height = 1000;
+			var padding = [15, 15, 25, 150];
+
+			// Determines width of bars
+			// Based on data values
+			var widthScale = d3.scale.linear()
+				// This is what is outputted
+				.range([ 0, width - padding[1] - padding[3] ]);
+
+			// Determines height of bars
+			// Based on number of values total
+			var heightScale = d3.scale.ordinal()
+				// This is what is outputted
+				.rangeRoundBands([ padding[0], height - padding[2] ], 0.15);
+
+			var xAxis = d3.svg.axis()
+				.scale(widthScale)
+				.tickFormat(function(d) {
+					return d + '%';
+				})
+				.ticks(6)
+				.orient("bottom");
+
+			var yAxis = d3.svg.axis()
+				.scale(heightScale)
+				.orient("left");
+
+			// Create empty SVG so we can append data to it later
+			var svg = d3.select("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			// Load CSV data
+			d3.csv("ia_free_reduced_50_higher.csv", function(data) {
+				// Sort desc
+				data.sort(function(a, b) {
+					return d3.descending(+a['Percent'], +b['Percent'] );
+				});
+
+				// Set second domain to max value in data
+				widthScale.domain([ 0, d3.max(data, function(d) {
+					return +d['Percent'];
+				}) ]);
+
+				// Map school name to school value
+				heightScale.domain(data.map(function(d) {
+					return d['Name'];
+				} ));
+
+				// Create rectangles and append to DOM
+				var rects = svg.selectAll("rect")
+					.data(data)
+					.enter()
+					.append("rect");
+
+				// Set attributes
+				rects.attr("x", padding[3])
+					.attr("y", function(d, num) {
+						return heightScale( d['Name'] );
+					})
+					.attr("width", function(d) {
+						return widthScale( d['Percent'] );
+					})
+					.attr("height", heightScale.rangeBand())
+					.append("title")
+					// Tooltip
+					.text(function(d) {
+						return 'The percentage of students on free or reduced lunch at ' + d['Name'] + 'High School is ' + d['Percent'] + '%.';
+					});
+
+				// Append x and y axis
+				svg.append("g")
+					.attr("class", "x-axis axis")
+					.attr("transform", "translate(" + padding[3] + "," + (height - padding[2]) + ")")
+					.call(xAxis);
+
+				svg.append("g")
+					.attr("class", "x-axis axis")
+					.attr("transform", "translate(" + padding[3] + "," + padding[0] + ")")
+					.call(xAxis);
+
+				svg.append("g")
+					.attr("class", "y-axis axis")
+					.attr("transform", "translate(" + padding[3] + ",0)")
+					.call(yAxis);
+			});
+		</script>
+	</body>
+</html>

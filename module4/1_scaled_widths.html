@@ -17,27 +17,21 @@
 		</style>
 	</head>
 	<body>
-
 		<script type="text/javascript">		
-
-
 			var w = 300;
 			var h = 400;
 
-
-
-			var widthScale = d3.scale.linear()
-								.domain([ 0, 7.8 ])
-								.range([ 0, w ]);
-
-
+			var width_scale = d3.scale.linear()
+				// Input value: Value of bars
+				// Second digit would typically equal the max value of the dataset
+				.domain([ 0, 7.8 ])
+				// Output value: Value of pixels that it represents
+				.range([ 0, w ]);
 
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
-
-
 
 			d3.csv("betterlifeindex.csv", function(data) {
 
@@ -55,18 +49,14 @@
 						return i * 10;
 					})
 					.attr("width", function(d) {
-						return widthScale(d.lifeSatisfaction);
+						return width_scale(d.lifeSatisfaction);
 					})
 					.attr("height", 8)
 					.append("title")
 					.text(function(d) {
 						return d.country + "'s life satisfaction score is " + d.lifeSatisfaction;
 					});
-
 			});
-
-
 		</script>
-
 	</body>
 </html>

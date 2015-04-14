@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Free and reduced lunch in Iowa</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+	</head>
+
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<body>
+		<h3>Free and reduced lunch in Iowa</h3>
+		<p>This graph shows all the schools in Iowa where 50% or more of their students are on a free or reduced lunch program. A total of 64 school districts are shown.</p>
+		<svg></svg>
+		<script type="text/javascript">		
+			var width = 750;
+			var height = 100;
+			var bar_padding = 1;
+
+			// Create empty SVG so we can append data to it later
+			var svg = d3.select("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			// Load CSV data
+			d3.csv("ia_free_reduced_top_20.csv", function(data) {
+				// Create global so we can refer to it later
+				var dataset = data;
+				
+				// Sort desc
+				dataset.sort(function(a, b) {
+					return d3.descending( parseInt(a['FreeOrReducedPercent']), parseInt(b['FreeOrReducedPercent']) );
+				});
+
+				// Create rectangles and append to DOM
+				var rects = svg.selectAll("rect")
+					.data(dataset)
+					.enter()
+					.append("rect");
+
+				// Create text and append
+				var text_nodes = svg.selectAll("text")
+					.data(dataset)
+					.enter()
+					.append("text")
+
+				// This is set so the bars grow from the bottom
+				rects.attr({
+						y: function(d) {
+    						return height - parseInt(d['FreeOrReducedPercent']);
+    					},
+						x: function(d, num) {
+							return num * (width / dataset.length);
+						},
+						width: width / dataset.length - bar_padding,
+						height: function(d) {
+							return parseInt(d['FreeOrReducedPercent']);
+						},
+						fill: function(d) {
+							return "rgb(0, 0, " + (parseInt(d['FreeOrReducedPercent']) * 1.5) + ")";
+						}
+					})
+					.append("title")
+					// Tooltip
+					.text(function(d) {
+						return 'The percentage of students on free or reduced lunch at ' + d['Name'] + 'High School is ' + d['FreeOrReducedPercent'] + '%.';
+					});
+
+				text_nodes.text(function(d) {
+        				return d['FreeOrReducedPercent'] + '%';
+   					})
+				   .attr({
+				   		x: function(d, num) {
+				   			// d * (750 / 20) + (750 / 20 - 1) / 2
+				   			// 0 * 37.5 + 36.5 / 2 = 18.25
+				   			// 1 * 37.5 + 36.5 / 2 = 55.75
+				        	return num * (width / dataset.length) + (width / dataset.length - bar_padding) / 2;
+				   		},
+				   		y: function(d) {
+				        	return height - parseInt(d['FreeOrReducedPercent']) + 15;
+				   		}
+				   	})
+			// Close CSV load
+			});
+		</script>
+	</body>
+</html>

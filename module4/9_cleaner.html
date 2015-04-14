@@ -5,7 +5,6 @@
 		<title>Cleaning Up</title>
 		<script type="text/javascript" src="../d3.v3.js"></script>
 		<style type="text/css">
-			
 			body {
 				background-color: white;
 				font-family: Helvetica, Arial, sans-serif;
@@ -49,47 +48,35 @@
 		</style>
 	</head>
 	<body>
-
 		<h1>Life Satisfaction</h1>
-
-		<p>Better Life Index &ldquo;Life Satisfaction&rdquo; scores by country. Source: <a href="http://stats.oecd.org/Index.aspx?DataSetCode=BLI">OECD</a>, 2014</p>
-
+		<p>Better Life Index "Life Satisfaction" scores by country. Source: <a href="http://stats.oecd.org/Index.aspx?DataSetCode=BLI">OECD</a>, 2014</p>
+		
 		<script type="text/javascript">		
-
-
-			var w = 700;
+			var w = 500;
 			var h = 600;
-			var padding = [ 20, 10, 30, 120 ];  //Top, right, bottom, left
-
-
+			//Top, right, bottom, left
+			var padding = [ 20, 10, 30, 120 ];
 
 			var widthScale = d3.scale.linear()
-								.range([ 0, w - padding[1] - padding[3] ]);
+				.range([ 0, w - padding[1] - padding[3] ]);
 			
 			var heightScale = d3.scale.ordinal()
-								.rangeRoundBands([ padding[0], h - padding[2] ], 0.1);
-
-
+				.rangeRoundBands([ padding[0], h - padding[2] ], 0.1);
 
 			var xAxis = d3.svg.axis()
-							.scale(widthScale)
-							.orient("bottom");
+				.scale(widthScale)
+				.orient("bottom");
 
 			var yAxis = d3.svg.axis()
-							.scale(heightScale)
-							.orient("left");
-
-
+				.scale(heightScale)
+				.orient("left");
 
 			var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
-
-
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h);
 
 			d3.csv("betterlifeindex.csv", function(data) {
-
 				data.sort(function(a, b) {
 					return d3.descending(+a.lifeSatisfaction, +b.lifeSatisfaction);
 				});
@@ -101,9 +88,9 @@
 				heightScale.domain(data.map(function(d) { return d.country; } ));
 
 				var rects = svg.selectAll("rect")
-								.data(data)
-								.enter()
-								.append("rect");
+					.data(data)
+					.enter()
+					.append("rect");
 
 				rects.attr("x", padding[3])
 					.attr("y", function(d) {
@@ -113,6 +100,7 @@
 						return widthScale(d.lifeSatisfaction);
 					})
 					.attr("height", heightScale.rangeBand())
+					// Sets color
 					.attr("fill", "steelblue")
 					.append("title")
 					.text(function(d) {
@@ -120,19 +108,15 @@
 					});
 
 				svg.append("g")
-					.attr("class", "x axis")
+					.attr("class", "x-axis axis")
 					.attr("transform", "translate(" + padding[3] + "," + (h - padding[2]) + ")")
 					.call(xAxis);
 
 				svg.append("g")
-					.attr("class", "y axis")
+					.attr("class", "y-axis axis")
 					.attr("transform", "translate(" + padding[3] + ",0)")
 					.call(yAxis);
-
 			});
-
-
 		</script>
-
 	</body>
 </html>

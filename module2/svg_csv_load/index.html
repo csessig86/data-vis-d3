@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Simple SVG and loading data with D3</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+	</head>
+
+	<style>
+		html, body {
+			font-family: Helvetica;
+		}
+
+		svg {
+			margin-bottom: 20px;
+		}
+
+		svg line {
+			stroke: blue;
+			stroke-width: 5px;
+		}
+
+		svg circle, rect {
+			fill: blue;
+		}
+
+		svg rect {
+			transform: rotate(-5deg);
+		}
+	</style>
+	<body>
+
+		<p>Here's a simple SVG:</p>
+	
+		<svg width="200" height="150">
+			<line x1="52" y1="25" x2="45" y2="130"></line>
+			<line x1="156" y1="30" x2="152" y2="120"></line>
+			<rect x="45" y="25" width="110" height="20"></rect>
+			<circle cx="32" cy="120" r="20"></circle>
+			<circle cx="140" cy="110" r="20"></circle>
+		</svg>
+		<p>Shout out to the iTunes icon for inspiration</p>
+		<p>Also, check the console for the data</p>
+
+		<script type="text/javascript">		
+			//Load in contents of CSV file
+			d3.csv("ia_free_reduced.csv", function(data) {
+				console.log(data);
+			});
+		</script>
+	</body>
+</html>

@@ -21,15 +21,16 @@
 		<script type="text/javascript">		
 
 
+			// Setting up canvas
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", 300)
 						.attr("height", 400);
 
-
-
+			// Load data
 			d3.csv("betterlifeindex.csv", function(data) {
 
+				// Create rectangles
 				svg.selectAll("rect")
 					.data(data)
 					.enter()

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Example scatterplot</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+	</head>
+
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<body>
+		<h3>Example scatterplot</h3>
+		<svg></svg>
+		<script type="text/javascript">
+		var dataset = [
+			[5, 20],
+			[480, 90],
+			[250, 50],
+			[100, 33],
+			[330, 95],
+			[410, 12],
+			[475, 44],
+			[25, 67],
+			[85, 21],
+			[220, 88]
+		];
+
+		// Global
+		var w = 500;
+		var h = 100;
+
+		//Create SVG element
+		var svg = d3.select("svg")
+			.attr("width", w)
+			.attr("height", h);
+
+		var circles = svg.selectAll("circle")
+			.data(dataset)
+			.enter()
+   			.append("circle")
+
+   		circles.attr({
+   			r: function(d) {
+   				// Area of a circle equals π times the radius squared, or A = πr2.
+   				return Math.sqrt(h - d[1]);
+   			},
+   			cx: function(d) {
+        		return d[0];
+        	},
+        	cy: function(d) {
+        		return d[1];
+   			}
+   		});
+
+   		var text_nodes = svg.selectAll("text")
+		   	.data(dataset)
+		   	.enter()
+		   	.append("text")
+		   	.text(function(d) {
+        		return d[0] + "," + d[1];
+   			})
+		   	.attr({
+		   		"font-family": "sans-serif",
+		   		"font-size": "11px",
+		   		"fill": "red",
+		   		x: function(d) {
+        			return d[0];
+   				},
+   				y: function(d) {
+        			return d[1];
+   				}
+   			})
+		</script>
+	</body>
+</html>

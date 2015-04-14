@@ -17,59 +17,62 @@
 		</style>
 	</head>
 	<body>
+	<script type="text/javascript">		
+		var w = 300;
+		var h = 400;
 
-		<script type="text/javascript">		
+		var width_scale = d3.scale.linear()
+			.range([ 0, w ]);
 
+		var svg = d3.select("body")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h);
 
-			var w = 300;
-			var h = 400;
-
-
-
-			var widthScale = d3.scale.linear()
-								.range([ 0, w ]);
-
-
-
-			var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
-
-
-
-			d3.csv("betterlifeindex.csv", function(data) {
-
-				data.sort(function(a, b) {
-					return d3.descending(+a.lifeSatisfaction, +b.lifeSatisfaction);
-				});
-
-				widthScale.domain([ 0, d3.max(data, function(d) {
-					return +d.lifeSatisfaction;
-				}) ]);
-
-				var rects = svg.selectAll("rect")
-								.data(data)
-								.enter()
-								.append("rect");
-
-				rects.attr("x", 0)
-					.attr("y", function(d, i) {
-						return i * 10;
-					})
-					.attr("width", function(d) {
-						return widthScale(d.lifeSatisfaction);
-					})
-					.attr("height", 8)
-					.append("title")
-					.text(function(d) {
-						return d.country + "'s life satisfaction score is " + d.lifeSatisfaction;
-					});
-
+		d3.csv("betterlifeindex.csv", function(data) {
+			data.sort(function(a, b) {
+				// The plus sign ensures that the string we return
+				// Is treated as and converted to number
+				return d3.descending(+a.lifeSatisfaction, +b.lifeSatisfaction);
 			});
 
+			// Dynamic domain is set here
+			// D3.max is a function that will take an array
+			// And return the highest value
+			// Ex: d3.max([2, 3, 4, 1, 2.5]) === 4
+			// It can also take objects
+			// And find the highest value based on a property
+			// Ex: var array = [{city: "San Fran", id: 5}, {city: "Miami", id: 3}
+			// d3.max(array, function(d) { return d['id'] }); === 5
+			width_scale.domain([ 0, d3.max(data, function(d) {
+				// The plus sign ensures that the string we return
+				// Is treated as and converted to number
+				return +d['lifeSatisfaction'];
+			}) ]);
 
+			// Without it, we get a string:
+			console.log( d3.max(data, function(d) {
+				return d['lifeSatisfaction'];
+			}));
+
+			var rects = svg.selectAll("rect")
+							.data(data)
+							.enter()
+							.append("rect");
+
+			rects.attr("x", 0)
+				.attr("y", function(d, i) {
+					return i * 10;
+				})
+				.attr("width", function(d) {
+					return width_scale(d['lifeSatisfaction']);
+				})
+				.attr("height", 8)
+				.append("title")
+				.text(function(d) {
+					return d.country + "'s life satisfaction score is " + d['lifeSatisfaction'];
+				});
+			});
 		</script>
-
 	</body>
 </html>
