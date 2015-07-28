@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Free and reduced lunch in Iowa</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+	</head>
+
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<body>
+		<h3>Breakdown: Students on free and reduced lunch in Iowa</h3>
+		<p>This graph shows all the schools in Iowa where 50% or more of their students are on a free or reduced lunch program. A total of 64 school districts are shown.</p>
+		<p>The y scale from top to bottom shows the percentage of students that each school has on one of those programs. The x scale from left to right shows the number of students on one of those programs.</p>
+		<p>As the graph shows, most of the schools shown have less than 5,000 students.</p>
+		<svg></svg>
+		<p>To download the data, <a href="https://docs.google.com/spreadsheets/d/1KvLX4M8ww2js4GMWOX4niM9fApu0efvc59pLKAyeM-s/" target="_blank">click here</a>.</p>
+
+		<script type="text/javascript">		
+			var width = 750;
+			var height = 500;
+			var padding = [40, 15, 35, 50];
+
+			// Determines x scale
+			// Based on data values
+			var xScale = d3.scale.linear()
+				// This is what is outputted
+				.range([ padding[3] + 15, width - padding[3] ]);
+
+			// Determines y scale
+			// Based on number of values total
+			var yScale = d3.scale.linear()
+				// This is what is outputted
+				.range([ padding[0] + 15, height - padding[2] ]);
+
+			var xAxis = d3.svg.axis()
+				.scale(xScale)
+				.orient("top");
+
+			var yAxis = d3.svg.axis()
+				.scale(yScale)
+				.orient("left")
+				.tickFormat(function(d) {
+					return d + "%";
+				});
+
+			// Create empty SVG so we can append data to it later
+			var svg = d3.select("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			// Load CSV data
+			d3.csv("ia_free_reduced_50_higher.csv", function(data) {
+				// Map school name to school value
+				xScale.domain([ 
+					d3.min(data, function(d) {
+						return +d['FreeorReduced'];
+					}),
+					d3.max(data, function(d) {
+						return +d['FreeorReduced'];
+					})
+				]);
+
+				// Set second domain to max value in data
+				yScale.domain([ 
+					d3.max(data, function(d) {
+						return +d['Percent'];
+					}),
+					d3.min(data, function(d) {
+						return +d['Percent'];
+					})
+				]);
+
+				// Create circleangles and append to DOM
+				var circles = svg.selectAll("circle")
+					.data(data)
+					.enter()
+					.append("circle");
+
+				// Set attributes
+				circles.attr("cx", function(d, num) {
+						return xScale( d['FreeorReduced'] );
+					})
+					.attr("cy", function(d, num) {
+						return yScale( d['Percent'] );
+					})
+					.attr("r", 4)
+					.append("title")
+					
+					// Tooltip
+					.text(function(d) {
+						return 'The percentage of students on free or reduced lunch at ' + d['Name'] + ' High School is ' + d['Percent'] + '%. A total of ' + d['FreeorReduced'] + ' students are on the program.';
+					});
+
+				// Append x and y axis
+				svg.append("g")
+					.attr("class", "x-axis axis")
+					.attr("transform", "translate(0," + padding[0] + ")")
+					.call(xAxis);
+
+				svg.append("g")
+					.attr("class", "y-axis axis")
+					.attr("transform", "translate(" + padding[3] + ",0)")
+					.call(yAxis);
+			});
+		</script>
+	</body>
+</html>

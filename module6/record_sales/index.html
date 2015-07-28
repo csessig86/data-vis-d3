@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Line Chart with Multiple Lines</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	</head>
+	<body>
+		<h1>Album sales down since 2008</h1>
+
+		<p>Shown is album sales in the United States by genre. Data provided by <a href="http://www.statista.com/statistics/188910/us-music-album-sales-by-genre-2010/" target="_blank">Statista</a>.</p>
+
+		<script type="text/javascript">		
+			//Dimensions and padding
+			var w = 700;
+			var h = 500;
+			//Top, right, bottom, left
+			var padding = [ 20, 10, 20, 50 ];
+
+			//Set up date formatting and years
+			var dateFormat = d3.time.format("%Y");
+
+			//Set up scales
+			var xScale = d3.time.scale()
+				.range([ padding[3], w - padding[1] - padding[3] ]);
+			
+			var yScale = d3.scale.linear()
+				.range([ padding[0], h - padding[2] ]);
+
+			//Configure axis generators
+			var xAxis = d3.svg.axis()
+				.scale(xScale)
+				.orient("top")
+				.tickFormat(function(d) {
+					return dateFormat(d);
+				});
+
+			var yAxis = d3.svg.axis()
+				.scale(yScale)
+				.orient("left")
+				.tickFormat(function(d) {
+					if (d === 0) {
+						return 0;
+					} else {
+						return '$' + d + 'M';
+					}
+				});
+
+			//Configure line generator
+			var line = d3.svg.line()
+				.x(function(d) {
+					return xScale( dateFormat.parse( d['time_interval'] ) );
+				})
+				.y(function(d) {
+					return yScale( +d['amount'] );
+				});
+
+			//Create the empty SVG image
+			var svg = d3.select("body")
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h);
+
+			//Load data
+			d3.csv("record_sales.csv", function(data) {
+				// Restructed data should look like so:
+				/*
+
+					[
+						{
+							country: "Australia",
+							emissions: [
+										{ year: 1961, amount: 90589.568 },
+										{ year: 1962, amount: 94912.961 },
+										{ year: 1963, amount: 101029.517 },
+										…
+									   ]
+						},
+						{
+							country: "Bermuda",
+							emissions: [
+										{ year: 1961, amount: 176.016 },
+										{ year: 1962, amount: 157.681 },
+										{ year: 1963, amount: 150.347 },
+										…
+									   ]
+						},
+						…
+					 ]
+
+				*/
+
+				//New array with all the years, for referencing later
+				var time_inverals = ["2008", "2009", "2010","2011","2012","2013","2014"];
+
+				//Create a new, empty array to hold our restructured dataset
+				var dataset = [];
+
+				//Loop once for each row in data
+				for (var num = 0; num < data.length; num++) {
+					//Create new object with this country's name and empty array
+					dataset[num] = {
+						'name': data[num]['Genre'],
+						'time_data': []
+					};
+
+					//Loop through all the years
+					for (var num_two = 0; num_two < time_inverals.length; num_two++) {
+						// If value is not empty
+						if ( data[num][time_inverals[num_two]] ) {
+
+							//Add a new object to the data array
+							//for this entry
+							dataset[num]['time_data'].push({
+								'time_interval': time_inverals[num_two],
+								'amount': data[num][time_inverals[num_two]]
+							});
+						}
+					}
+				// Close for loop
+				}
+				
+				//Uncomment to log the original data to the console
+				// console.log(data);
+
+				//Uncomment to log the newly restructured dataset to the console
+				// console.log(dataset);
+
+				//Set scale domains
+				xScale.domain([ 
+					d3.min(time_inverals, function(d) {
+						return dateFormat.parse(d);
+					}),
+					d3.max(time_inverals, function(d) {
+						return dateFormat.parse(d);
+					})
+				]);
+
+				yScale.domain([ 
+					d3.max(dataset, function(d) {
+						return d3.max(d['time_data'], function(d) {
+							return +d['amount'];
+						});
+					}),
+					0
+				]);
+
+				//Make a group for each country
+				var groups = svg.selectAll("g")
+					.data(dataset)
+					.enter()
+					.append("g")
+
+				//Append a title with the name (so we get easy tooltips)
+				groups.append("title")
+					.text(function(d) {
+						return d['name'];
+					});
+
+				// Within each group, create a new line/path,
+				// binding just the right data to each one
+				var paths = groups.selectAll("path")
+					.data(function(d) {
+						return [ d['time_data'] ];
+					})
+					.enter()
+					.append("path")
+					.attr("class", "line")
+					.attr("d", line)
+					.attr("fill", "none")
+					.attr('stroke','steelblue')
+					.attr("stroke-width", 2)
+					.attr("opacity",0);
+
+				//Axes
+				svg.append("g")
+					.attr("class", "x axis")
+					.attr("transform", "translate(0," + (padding[0]) + ")")
+					.call(xAxis);
+
+				svg.append("g")
+					.attr("class", "y axis")
+					.attr("transform", "translate(" + (padding[3]) + ",0)")
+					.call(yAxis);
+
+				// Fade in
+				paths.transition()
+					.duration(2000)
+					.attr("opacity",1)
+
+			});
+			//End USA data load function
+		</script>
+	</body>
+</html>

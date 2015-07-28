@@ -50,21 +50,15 @@
 		<p>Better Life Index &ldquo;Life Satisfaction&rdquo; scores vs. percentage of population reporting good or better health. Source: <a href="http://stats.oecd.org/Index.aspx?DataSetCode=BLI">OECD</a>, 2014</p>
 
 		<script type="text/javascript">		
-
-
 			var w = 700;
 			var h = 600;
 			var padding = [ 20, 10, 50, 50 ];  //Top, right, bottom, left
-
-
 
 			var xScale = d3.scale.linear()
 								.range([ padding[3], w - padding[1] - padding[3] ]);
 			
 			var yScale = d3.scale.linear()
 								.range([ padding[0], h - padding[2] ]);
-
-
 
 			var xAxis = d3.svg.axis()
 							.scale(xScale)
@@ -78,14 +72,10 @@
 								return d + "%";
 							});
 
-
-
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
-
-
 
 			d3.csv("betterlifeindex.csv", function(data) {
 

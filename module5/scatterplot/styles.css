@@ -1,0 +1,39 @@
+html, body {
+	font-family: Helvetica;
+}
+
+circle {
+	cursor: pointer;
+	fill: #4169E1;
+	stroke: #333;
+	stroke-width: 1;
+}
+
+circle:hover {
+	fill: #203470;
+	stroke-width: 5;
+}
+
+svg {
+	margin-bottom: 20px;
+}
+
+rect:hover {
+	fill: #999;
+}
+
+.axis path, .axis line {
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.axis text {
+	font-family:sans-serif;
+	font-size: 12px;
+	fill: #333;
+}
+
+.y-axis path, .y-axis line {
+	opacity: 0;
+}

@@ -2,10 +2,9 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>Transitions</title>
+		<title>Cleaning Up</title>
 		<script type="text/javascript" src="../d3.v3.js"></script>
 		<style type="text/css">
-			
 			body {
 				background-color: white;
 				font-family: Helvetica, Arial, sans-serif;
@@ -44,16 +43,14 @@
 		</style>
 	</head>
 	<body>
-
 		<h1>Life Satisfaction</h1>
-
-		<p>Better Life Index &ldquo;Life Satisfaction&rdquo; scores vs. percentage of population reporting good or better health. Source: <a href="http://stats.oecd.org/Index.aspx?DataSetCode=BLI">OECD</a>, 2014</p>
-
+		<p>Better Life Index "Life Satisfaction" scores by country. Source: <a href="http://stats.oecd['org/Index.aspx?DataSetCode=BLI">OECD</a>, 2014</p>
+		
 		<script type="text/javascript">		
-			var w = 700;
-			var h = 600;
+			var w = 500;
+			var h = 400;
 			//Top, right, bottom, left
-			var padding = [ 20, 10, 50, 50 ];
+			var padding = [ 20, 10, 30, 40 ];
 
 			var xScale = d3.scale.linear()
 				.range([ padding[3], w - padding[1] - padding[3] ]);
@@ -63,15 +60,11 @@
 
 			var xAxis = d3.svg.axis()
 				.scale(xScale)
-				.orient("bottom")
-				.ticks(15);
+				.orient("bottom");
 
 			var yAxis = d3.svg.axis()
 				.scale(yScale)
-				.orient("left")
-				.tickFormat(function(d) {
-					return d + "%";
-				});
+				.orient("left");
 
 			var svg = d3.select("body")
 				.append("svg")
@@ -79,62 +72,47 @@
 				.attr("height", h);
 
 			d3.csv("betterlifeindex.csv", function(data) {
+				data.sort(function(a, b) {
+					return d3.descending(+a['lifeSatisfaction'], +b['lifeSatisfaction']);
+				});
 
-				xScale.domain([ 
-					d3.min(data, function(d) {
-						return +d.lifeSatisfaction;
-					}), 
-					d3.max(data, function(d) {
-						return +d.lifeSatisfaction;
-					})
-				]);
+				xScale.domain([ 0, d3.max(data, function(d) {
+					return +d['lifeSatisfaction'];
+				}) ]);
 
-				yScale.domain([
-					d3.max(data, function(d) {
-						return +d.selfReportedHealth;
-					}),
-					d3.min(data, function(d) {
-						return +d.selfReportedHealth;
-					})
-				]);
+				yScale.domain([ d3.max(data, function(d) {
+					return +d['selfReportedHealth'];
+				}), 0]);
 
 				var circles = svg.selectAll("circle")
 					.data(data)
 					.enter()
 					.append("circle");
 
-				circles.attr('cx', 0)
-					.attr("cy", function(d) {
-						return yScale(d.selfReportedHealth);
+				circles.attr("cx", function(d) {
+						return xScale(d['lifeSatisfaction']);
 					})
-					.attr("r", 0.1)
+					.attr("cy", function(d) {
+						return yScale(d['selfReportedHealth']);
+					})
+					.attr("r", 3)
+					// Sets color
 					.attr("fill", "steelblue")
 					.append("title")
 					.text(function(d) {
-						return d.country + "'s life satisfaction score is " + d.lifeSatisfaction + ", and " + d.selfReportedHealth + "% report good health";
+						return d['country'] + "'s life satisfaction score is " + d['lifeSatisfaction'];
 					});
 
-				circles.transition()
-					.duration(2000)
-					.attr("cx", function(d) {
-						return xScale(d.lifeSatisfaction);
-					})
-					.attr("r", 6)
-					.attr("fill","purple")
-
-
 				svg.append("g")
-					.attr("class", "x axis")
-					.attr("transform", "translate(0," + (h - padding[2] + 10) + ")")
+					.attr("class", "x-axis axis")
+					.attr("transform", "translate(0," + (h - padding[2]) + ")")
 					.call(xAxis);
 
 				svg.append("g")
-					.attr("class", "y axis")
-					.attr("transform", "translate(" + (padding[3] - 10) + ",0)")
+					.attr("class", "y-axis axis")
+					.attr("transform", "translate(" + padding[3] + ",0)")
 					.call(yAxis);
-
 			});
 		</script>
-
 	</body>
 </html>

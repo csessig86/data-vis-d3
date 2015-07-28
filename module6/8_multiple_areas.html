@@ -189,8 +189,6 @@
 				//Uncomment to log the newly restructured dataset to the console
 				// console.log(dataset);
 
-
-
 				//Set scale domains
 				xScale.domain([ 
 					d3.min(years, function(d) {
@@ -209,8 +207,6 @@
 					}),
 					0
 				]);
-
-
 
 				//Make a group for each country
 				var groups = svg.selectAll("g")
@@ -238,8 +234,6 @@
 					.attr("stroke", "none")
 					.attr("opacity", 0.1);
 
-
-
 				//Axes
 				svg.append("g")
 					.attr("class", "x axis")
@@ -253,9 +247,6 @@
 
 			});
 			//End USA data load function
-
-
 		</script>
-
 	</body>
 </html>

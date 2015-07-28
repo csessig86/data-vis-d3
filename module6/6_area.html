@@ -50,58 +50,47 @@
 		<p>The United States&rsquo; carbon dioxide emissions, 1961-2010. Source: <a href="http://data.worldbank.org/indicator/EN.ATM.CO2E.KT?page=6">World Bank</a>, 2014</p>
 
 		<script type="text/javascript">		
-
-
 			var w = 700;
 			var h = 600;
-			var padding = [ 20, 10, 50, 100 ];  //Top, right, bottom, left
-
-
+			//Top, right, bottom, left
+			var padding = [ 20, 10, 50, 100 ];
 
 			//Set up date formatting and years
 			var dateFormat = d3.time.format("%Y");
 
-
-
 			var xScale = d3.time.scale()
-								.range([ padding[3], w - padding[1] - padding[3] ]);
+				.range([ padding[3], w - padding[1] - padding[3] ]);
 			
 			var yScale = d3.scale.linear()
-								.range([ padding[0], h - padding[2] ]);
-
-
+				.range([ padding[0], h - padding[2] ]);
 
 			var xAxis = d3.svg.axis()
-							.scale(xScale)
-							.orient("bottom")
-							.ticks(15)
-							.tickFormat(function(d) {
-								return dateFormat(d);
-							});
+				.scale(xScale)
+				.orient("bottom")
+				.ticks(15)
+				.tickFormat(function(d) {
+					return dateFormat(d);
+				});
 
 			var yAxis = d3.svg.axis()
-							.scale(yScale)
-							.orient("left");
-
-
+				.scale(yScale)
+				.orient("left");
 
 			var area = d3.svg.area()
 				.x(function(d) {
 					return xScale(dateFormat.parse(d.year));
 				})
+				// Bottom of the line chart
 				.y0(h - padding[2])
+				// The top
 				.y1(function(d) {
 					return yScale(d.emissions);
 				});
 
-
-
 			var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
-
-
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h);
 
 			d3.csv("worldbankdata/usa_co2_emissions.csv", function(data) {
 
@@ -122,10 +111,8 @@
 				]);
 
 				//Area
-				//
 				// Note data is wrapped in another array, so all its
 				// values are bound to a single element (the area!)
-				//
 				svg.data([ data ])
 					.append("path")
 					.attr("class", "area usa")
